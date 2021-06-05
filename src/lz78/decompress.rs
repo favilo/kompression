@@ -153,6 +153,30 @@ mod tests {
     }
 
     #[test]
+    fn four_equal_bytes() {
+        let mut uncompressed = Vec::new();
+        let mut d = LZ78Decompressor::new(&mut uncompressed);
+        let data = vec![0b0110_0001, 0b1011_0000, 0b1010_0000];
+        let expected = b"aaaa";
+        assert_eq!(d.read(&data[..]).unwrap(), 4);
+        assert_eq!(d.finalize().unwrap(), 0);
+        assert_eq!(uncompressed, expected);
+    }
+
+    #[test]
+    fn four_equal_bytes_serial() {
+        let mut uncompressed = Vec::new();
+        let mut d = LZ78Decompressor::new(&mut uncompressed);
+        let data = vec![0b0110_0001, 0b1011_0000, 0b1010_0000];
+        let expected = b"aaaa";
+        assert_eq!(d.read(&data[..1]).unwrap(), 1);
+        assert_eq!(d.read(&data[1..2]).unwrap(), 1);
+        assert_eq!(d.read(&data[2..3]).unwrap(), 2);
+        assert_eq!(d.finalize().unwrap(), 0);
+        assert_eq!(uncompressed, expected);
+    }
+
+    #[test]
     fn zero_through_six() {
         let mut uncompressed = Vec::new();
         let mut d = LZ78Decompressor::new(&mut uncompressed);
